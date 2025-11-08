@@ -1,0 +1,16 @@
+# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+
+# Train/val/test sets as 1) dir: path/to/imgs, 2) file: path/to/imgs.txt, or 3) list: [path/to/imgs1, path/to/imgs2, ..]
+path: ../../dataset/dataset_final_v2 # dataset root dir
+train: ./images/train # train images (relative to 'path') 4 images
+val: ./images/val # val images (relative to 'path') 4 images
+
+# Classes
+names:
+  0: pig
+
+# python train_dual.py --device 0 --batch 8 --flat-cos-lr --data data_aug.yaml --img 640 --cfg models/detect/yolov9-c-hyper.yaml --name yolov9-c-hyper_self --hyp hyp.scratch-self.yaml --epochs 50 --save-period 5
+
+# python detect_dual.py --weights runs/train/yolov9-c-hyper_self/weights/epoch35.pt --source ../../dataset/taica-cvpdl-2025-hw-1/test/img/ --save-txt --save-conf --name hyper_yolo_c_self_epoch35 --conf-thres 0.25
+
+# python val_dual.py --data data_aug.yaml --img 640 --batch 32 --device 0 --weights runs/train/yolov9-c-hyper/weights/best.pt --save-json --name yolov9_s_hyper_c_640_val --conf-sweep

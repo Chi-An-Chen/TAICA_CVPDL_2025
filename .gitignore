@@ -1,0 +1,9 @@
+# Ignore .pyc files
+__pycache__/
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore weights file
+*.pth
+*.pt

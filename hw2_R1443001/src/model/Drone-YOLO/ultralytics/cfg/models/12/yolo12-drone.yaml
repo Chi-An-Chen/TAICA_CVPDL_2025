@@ -1,0 +1,56 @@
+# Ultralytics YOLO 🚀, AGPL-3.0 license
+# YOLO12m-Drone: optimized for drone detection
+
+# Parameters
+nc: 80  # number of classes
+scales:
+  n: [0.33, 0.25, 1024]
+  s: [0.50, 0.50, 1024]
+  m: [0.67, 0.75, 1024]
+  l: [1.00, 1.00, 768]
+  x: [1.00, 1.25, 512]
+
+# Backbone
+backbone:
+  # [from, repeats, module, args]
+  - [-1, 1, Conv, [64, 3, 2]]                     # 0-P1/2
+  - [-1, 1, RepVGGBlock, [128, 3, 2]]             # 1-P2/4
+  - [-1, 2, C2f, [128, True]]                     # 2
+  - [-1, 1, RepVGGBlock, [256, 3, 2]]             # 3-P3/8
+  - [-1, 3, C2f, [256, True]]                     # 4
+  - [-1, 1, RepVGGBlock, [512, 3, 2]]             # 5-P4/16
+  - [-1, 3, C2f, [512, True]]                     # 6
+  - [-1, 1, RepVGGBlock, [1024, 3, 2]]            # 7-P5/32
+  - [-1, 1, C2f, [1024, True]]                    # 8
+  - [-1, 1, SPPF, [1024, 5]]                      # 9-P5/32
+
+# Head
+head:
+  # Top-down pathway
+  - [-1, 1, nn.Upsample, [None, 2, 'nearest']]    # 10: P5->P4 (32->16)
+  - [[-1, 6], 1, Concat, [1]]                     # 11: concat P4 (1024+512=1536)
+  - [-1, 3, C2f, [512, True]]                     # 12: P4 refined
+  
+  - [-1, 1, nn.Upsample, [None, 2, 'nearest']]    # 13: P4->P3 (16->8)
+  - [[-1, 4], 1, Concat, [1]]                     # 14: concat P3 (512+256=768)
+  - [-1, 3, C2f, [256, True]]                     # 15: P3 refined
+  
+  - [-1, 1, nn.Upsample, [None, 2, 'nearest']]    # 16: P3->P2 (8->4)
+  - [[-1, 2], 1, Concat, [1]]                     # 17: concat P2 (256+128=384)
+  - [-1, 3, C2f, [128, True]]                     # 18: P2 refined
+  
+  # Bottom-up pathway
+  - [-1, 1, Conv, [128, 3, 2]]                    # 19: P2->P3 (4->8)
+  - [[-1, 15], 1, Concat, [1]]                    # 20: concat (128+256=384)
+  - [-1, 3, C2f, [256, True]]                     # 21: P3 out
+  
+  - [-1, 1, Conv, [256, 3, 2]]                    # 22: P3->P4 (8->16)
+  - [[-1, 12], 1, Concat, [1]]                    # 23: concat (256+512=768)
+  - [-1, 3, C2f, [512, True]]                     # 24: P4 out
+  
+  - [-1, 1, Conv, [512, 3, 2]]                    # 25: P4->P5 (16->32)
+  - [[-1, 9], 1, Concat, [1]]                     # 26: concat (512+1024=1536)
+  - [-1, 3, C2f, [1024, True]]                    # 27: P5 out
+  
+  # Detection head
+  - [[18, 21, 24, 27], 1, Detect, [nc]]           # 28: Detect(P2, P3, P4, P5)

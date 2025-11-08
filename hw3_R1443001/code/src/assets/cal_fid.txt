@@ -1,0 +1,8 @@
+# calculate FID score with two images folders
+python -m pytorch_fid dataset/MNIST generated_mnist
+
+# create .npz file -> generated_mnist.npz
+python -m pytorch_fid --save-stats generated_mnist generated_mnist
+
+## Final FID Result ##
+FID:  18.93405771214168

@@ -1,0 +1,12 @@
+path: C:\Users\User\Desktop\TAICA_CVPDL_2025\hw2_R1443001\src\dataset\dataset\organized
+
+train: images/train
+val: images/val
+
+names:
+  0: car
+  1: hov
+  2: person
+  3: motorcycle
+
+nc: 4

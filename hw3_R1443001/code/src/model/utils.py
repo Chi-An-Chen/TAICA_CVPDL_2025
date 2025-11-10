@@ -36,6 +36,38 @@ def ddpm_schedules(beta1: float, beta2: float, T: int) -> Dict[str, torch.Tensor
         "mab_over_sqrtmab": mab_over_sqrtmab_inv,
     }
 
+def ddpm_schedules_cosine(T: int, s: float = 0.008) -> Dict[str, torch.Tensor]:
+    """
+    使用 cosine schedule (Improved DDPM, Nichol & Dhariwal 2021)
+    """
+    steps = T + 1
+    t = torch.linspace(0, T, steps, dtype=torch.float32)
+    
+    # Cosine schedule for alpha_bar
+    f_t = torch.cos(((t / T + s) / (1 + s)) * torch.pi / 2) ** 2
+    alphabar_t = f_t / f_t[0]
+    
+    # 計算其他相關量
+    alpha_t = torch.cat([torch.tensor([1.0]), alphabar_t[1:] / alphabar_t[:-1]])
+    alpha_t = torch.clamp(alpha_t, 0.0001, 0.9999)  # 避免極端值
+    
+    beta_t = 1 - alpha_t
+    sqrt_beta_t = torch.sqrt(beta_t)
+    sqrtab = torch.sqrt(alphabar_t)
+    oneover_sqrta = 1 / torch.sqrt(alpha_t)
+    sqrtmab = torch.sqrt(1 - alphabar_t)
+    mab_over_sqrtmab = (1 - alpha_t) / sqrtmab
+    
+    return {
+        "alpha_t": alpha_t,
+        "oneover_sqrta": oneover_sqrta,
+        "sqrt_beta_t": sqrt_beta_t,
+        "alphabar_t": alphabar_t,
+        "sqrtab": sqrtab,
+        "sqrtmab": sqrtmab,
+        "mab_over_sqrtmab": mab_over_sqrtmab,
+    }
+
 def timestep_embedding(timesteps, dim, max_period=10000):
     """
     創建正弦時間步嵌入
@@ -66,4 +98,5 @@ def zero_module(module):
     for p in module.parameters():
         p.detach().zero_()
     return module
+
 

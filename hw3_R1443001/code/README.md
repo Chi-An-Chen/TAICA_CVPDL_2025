@@ -1,4 +1,4 @@
-# Homework 1 - Object Detection
+# Homework 3 - Image Generation
 
 ## Installation
 

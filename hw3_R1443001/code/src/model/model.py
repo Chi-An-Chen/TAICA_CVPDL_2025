@@ -1,7 +1,7 @@
 """
 Author: Chi-An Chen
-Date: 2025-11-08
-Description:
+Date: 2025-11-10
+Description: UNet, DDPM model with consine schedules
 """
 import torch
 import torch.nn as nn
@@ -308,14 +308,20 @@ class DDPM(nn.Module):
         betas: Tuple[float, float],
         n_T: int,
         criterion: nn.Module = nn.SmoothL1Loss(beta=0.03),
+        schedule_type: str = "cosine",  # 新增參數: "linear" 或 "cosine"
     ) -> None:
         super(DDPM, self).__init__()
         self.eps_model = eps_model
-
-        # 註冊緩衝區以便訪問這些張量
-        for k, v in ddpm_schedules(betas[0], betas[1], n_T).items():
+        
+        # 根據類型選擇 schedule
+        if schedule_type == "cosine":
+            schedules = ddpm_schedules_cosine(n_T)
+        else:  # linear
+            schedules = ddpm_schedules(betas[0], betas[1], n_T)
+        
+        for k, v in schedules.items():
             self.register_buffer(k, v)
-
+        
         self.n_T = n_T
         self.criterion = criterion
 

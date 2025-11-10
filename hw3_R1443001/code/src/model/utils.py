@@ -1,6 +1,6 @@
 """
 Author: Chi-An Chen
-Date: 2025-11-08
+Date: 2025-11-10
 Description: utils for diffusion model
 """
 import math
@@ -98,5 +98,6 @@ def zero_module(module):
     for p in module.parameters():
         p.detach().zero_()
     return module
+
 
 

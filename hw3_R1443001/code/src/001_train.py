@@ -1,7 +1,7 @@
 """
 Author: Chi-An Chen
 Date: 2025-11-08
-Description: Training Difffusion model
+Description: Training DDPM model
 """
 import os
 import torch

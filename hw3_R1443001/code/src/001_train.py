@@ -169,7 +169,8 @@ def train_mnist(
     ddpm = DDPM(
         eps_model=unet,
         betas=(1e-4, 0.02),
-        n_T=1000
+        n_T=1000,
+        # schedule_type="cosine"
     )
     ddpm.to(device)
 

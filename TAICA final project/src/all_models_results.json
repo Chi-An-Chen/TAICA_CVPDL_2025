@@ -1,0 +1,394 @@
+{
+    "ConvNeXt_Large": {
+        "accuracy": 0.9796610169491525,
+        "precision": 0.9800706376822302,
+        "recall": 0.9796610169491525,
+        "f1_score": 0.9795228038187477,
+        "per_class_metrics": {
+            "disease_canker": {
+                "precision": 1.0,
+                "recall": 1.0,
+                "f1_score": 1.0,
+                "support": 97
+            },
+            "disease_greasy_spot": {
+                "precision": 0.979381443298969,
+                "recall": 1.0,
+                "f1_score": 0.9895833333333334,
+                "support": 95
+            },
+            "disease_sooty_moulds": {
+                "precision": 0.9924242424242424,
+                "recall": 0.9924242424242424,
+                "f1_score": 0.9924242424242424,
+                "support": 132
+            },
+            "health_murcott": {
+                "precision": 0.9743589743589743,
+                "recall": 0.95,
+                "f1_score": 0.9620253164556962,
+                "support": 80
+            },
+            "health_ponkan": {
+                "precision": 0.9518072289156626,
+                "recall": 0.9875,
+                "f1_score": 0.9693251533742331,
+                "support": 80
+            },
+            "pest_aphid": {
+                "precision": 1.0,
+                "recall": 0.8333333333333334,
+                "f1_score": 0.9090909090909091,
+                "support": 6
+            },
+            "pest_phyllocnistis": {
+                "precision": 1.0,
+                "recall": 0.9130434782608695,
+                "f1_score": 0.9545454545454546,
+                "support": 46
+            },
+            "pest_thrips": {
+                "precision": 0.9464285714285714,
+                "recall": 0.9814814814814815,
+                "f1_score": 0.9636363636363636,
+                "support": 54
+            }
+        }
+    },
+    "EfficientNet_V2_L": {
+        "accuracy": 0.9661016949152542,
+        "precision": 0.9670535646486338,
+        "recall": 0.9661016949152542,
+        "f1_score": 0.9656972152671484,
+        "per_class_metrics": {
+            "disease_canker": {
+                "precision": 0.9797979797979798,
+                "recall": 1.0,
+                "f1_score": 0.9897959183673469,
+                "support": 97
+            },
+            "disease_greasy_spot": {
+                "precision": 0.9791666666666666,
+                "recall": 0.9894736842105263,
+                "f1_score": 0.9842931937172775,
+                "support": 95
+            },
+            "disease_sooty_moulds": {
+                "precision": 0.9850746268656716,
+                "recall": 1.0,
+                "f1_score": 0.9924812030075187,
+                "support": 132
+            },
+            "health_murcott": {
+                "precision": 0.9863013698630136,
+                "recall": 0.9,
+                "f1_score": 0.9411764705882353,
+                "support": 80
+            },
+            "health_ponkan": {
+                "precision": 0.9080459770114943,
+                "recall": 0.9875,
+                "f1_score": 0.9461077844311377,
+                "support": 80
+            },
+            "pest_aphid": {
+                "precision": 1.0,
+                "recall": 1.0,
+                "f1_score": 1.0,
+                "support": 6
+            },
+            "pest_phyllocnistis": {
+                "precision": 0.975,
+                "recall": 0.8478260869565217,
+                "f1_score": 0.9069767441860465,
+                "support": 46
+            },
+            "pest_thrips": {
+                "precision": 0.9272727272727272,
+                "recall": 0.9444444444444444,
+                "f1_score": 0.9357798165137615,
+                "support": 54
+            }
+        }
+    },
+    "MobileNet_V3_Large": {
+        "accuracy": 0.9610169491525423,
+        "precision": 0.9635096203390269,
+        "recall": 0.9610169491525423,
+        "f1_score": 0.9599946563500414,
+        "per_class_metrics": {
+            "disease_canker": {
+                "precision": 0.9797979797979798,
+                "recall": 1.0,
+                "f1_score": 0.9897959183673469,
+                "support": 97
+            },
+            "disease_greasy_spot": {
+                "precision": 0.9595959595959596,
+                "recall": 1.0,
+                "f1_score": 0.979381443298969,
+                "support": 95
+            },
+            "disease_sooty_moulds": {
+                "precision": 0.9847328244274809,
+                "recall": 0.9772727272727273,
+                "f1_score": 0.9809885931558935,
+                "support": 132
+            },
+            "health_murcott": {
+                "precision": 1.0,
+                "recall": 0.925,
+                "f1_score": 0.961038961038961,
+                "support": 80
+            },
+            "health_ponkan": {
+                "precision": 0.9090909090909091,
+                "recall": 1.0,
+                "f1_score": 0.9523809523809523,
+                "support": 80
+            },
+            "pest_aphid": {
+                "precision": 0.8571428571428571,
+                "recall": 1.0,
+                "f1_score": 0.9230769230769231,
+                "support": 6
+            },
+            "pest_phyllocnistis": {
+                "precision": 1.0,
+                "recall": 0.7391304347826086,
+                "f1_score": 0.85,
+                "support": 46
+            },
+            "pest_thrips": {
+                "precision": 0.896551724137931,
+                "recall": 0.9629629629629629,
+                "f1_score": 0.9285714285714286,
+                "support": 54
+            }
+        }
+    },
+    "RegNet_Y_128GF": {
+        "accuracy": 0.9627118644067797,
+        "precision": 0.9642925743743825,
+        "recall": 0.9627118644067797,
+        "f1_score": 0.9625457175036806,
+        "per_class_metrics": {
+            "disease_canker": {
+                "precision": 0.9897959183673469,
+                "recall": 1.0,
+                "f1_score": 0.9948717948717949,
+                "support": 97
+            },
+            "disease_greasy_spot": {
+                "precision": 0.9895833333333334,
+                "recall": 1.0,
+                "f1_score": 0.9947643979057592,
+                "support": 95
+            },
+            "disease_sooty_moulds": {
+                "precision": 0.9632352941176471,
+                "recall": 0.9924242424242424,
+                "f1_score": 0.9776119402985075,
+                "support": 132
+            },
+            "health_murcott": {
+                "precision": 0.9861111111111112,
+                "recall": 0.8875,
+                "f1_score": 0.9342105263157895,
+                "support": 80
+            },
+            "health_ponkan": {
+                "precision": 0.9176470588235294,
+                "recall": 0.975,
+                "f1_score": 0.9454545454545454,
+                "support": 80
+            },
+            "pest_aphid": {
+                "precision": 0.7142857142857143,
+                "recall": 0.8333333333333334,
+                "f1_score": 0.7692307692307693,
+                "support": 6
+            },
+            "pest_phyllocnistis": {
+                "precision": 1.0,
+                "recall": 0.8695652173913043,
+                "f1_score": 0.9302325581395349,
+                "support": 46
+            },
+            "pest_thrips": {
+                "precision": 0.9107142857142857,
+                "recall": 0.9444444444444444,
+                "f1_score": 0.9272727272727272,
+                "support": 54
+            }
+        }
+    },
+    "ResNeXt101_64x4d": {
+        "accuracy": 0.9694915254237289,
+        "precision": 0.9706357552735713,
+        "recall": 0.9694915254237289,
+        "f1_score": 0.9695638256176891,
+        "per_class_metrics": {
+            "disease_canker": {
+                "precision": 0.9797979797979798,
+                "recall": 1.0,
+                "f1_score": 0.9897959183673469,
+                "support": 97
+            },
+            "disease_greasy_spot": {
+                "precision": 0.9791666666666666,
+                "recall": 0.9894736842105263,
+                "f1_score": 0.9842931937172775,
+                "support": 95
+            },
+            "disease_sooty_moulds": {
+                "precision": 1.0,
+                "recall": 0.9772727272727273,
+                "f1_score": 0.9885057471264368,
+                "support": 132
+            },
+            "health_murcott": {
+                "precision": 0.9615384615384616,
+                "recall": 0.9375,
+                "f1_score": 0.9493670886075949,
+                "support": 80
+            },
+            "health_ponkan": {
+                "precision": 0.9512195121951219,
+                "recall": 0.975,
+                "f1_score": 0.9629629629629629,
+                "support": 80
+            },
+            "pest_aphid": {
+                "precision": 1.0,
+                "recall": 1.0,
+                "f1_score": 1.0,
+                "support": 6
+            },
+            "pest_phyllocnistis": {
+                "precision": 1.0,
+                "recall": 0.8913043478260869,
+                "f1_score": 0.9425287356321839,
+                "support": 46
+            },
+            "pest_thrips": {
+                "precision": 0.8813559322033898,
+                "recall": 0.9629629629629629,
+                "f1_score": 0.9203539823008849,
+                "support": 54
+            }
+        }
+    },
+    "Wide_ResNet101_2": {
+        "accuracy": 0.9525423728813559,
+        "precision": 0.9552178582554585,
+        "recall": 0.9525423728813559,
+        "f1_score": 0.9530550172670544,
+        "per_class_metrics": {
+            "disease_canker": {
+                "precision": 1.0,
+                "recall": 0.979381443298969,
+                "f1_score": 0.9895833333333334,
+                "support": 97
+            },
+            "disease_greasy_spot": {
+                "precision": 0.979381443298969,
+                "recall": 1.0,
+                "f1_score": 0.9895833333333334,
+                "support": 95
+            },
+            "disease_sooty_moulds": {
+                "precision": 0.9847328244274809,
+                "recall": 0.9772727272727273,
+                "f1_score": 0.9809885931558935,
+                "support": 132
+            },
+            "health_murcott": {
+                "precision": 0.935064935064935,
+                "recall": 0.9,
+                "f1_score": 0.9171974522292994,
+                "support": 80
+            },
+            "health_ponkan": {
+                "precision": 0.9176470588235294,
+                "recall": 0.975,
+                "f1_score": 0.9454545454545454,
+                "support": 80
+            },
+            "pest_aphid": {
+                "precision": 0.8571428571428571,
+                "recall": 1.0,
+                "f1_score": 0.9230769230769231,
+                "support": 6
+            },
+            "pest_phyllocnistis": {
+                "precision": 0.9487179487179487,
+                "recall": 0.8043478260869565,
+                "f1_score": 0.8705882352941177,
+                "support": 46
+            },
+            "pest_thrips": {
+                "precision": 0.8620689655172413,
+                "recall": 0.9259259259259259,
+                "f1_score": 0.8928571428571429,
+                "support": 54
+            }
+        }
+    },
+    "ResNet152": {
+        "accuracy": 0.9474576271186441,
+        "precision": 0.9549694781856145,
+        "recall": 0.9474576271186441,
+        "f1_score": 0.9504734271678518,
+        "per_class_metrics": {
+            "disease_canker": {
+                "precision": 1.0,
+                "recall": 1.0,
+                "f1_score": 1.0,
+                "support": 97
+            },
+            "disease_greasy_spot": {
+                "precision": 0.9787234042553191,
+                "recall": 0.968421052631579,
+                "f1_score": 0.9735449735449735,
+                "support": 95
+            },
+            "disease_sooty_moulds": {
+                "precision": 0.9626865671641791,
+                "recall": 0.9772727272727273,
+                "f1_score": 0.9699248120300752,
+                "support": 132
+            },
+            "health_murcott": {
+                "precision": 0.9473684210526315,
+                "recall": 0.9,
+                "f1_score": 0.9230769230769231,
+                "support": 80
+            },
+            "health_ponkan": {
+                "precision": 0.9259259259259259,
+                "recall": 0.9375,
+                "f1_score": 0.9316770186335404,
+                "support": 80
+            },
+            "pest_aphid": {
+                "precision": 0.8571428571428571,
+                "recall": 1.0,
+                "f1_score": 0.9230769230769231,
+                "support": 6
+            },
+            "pest_phyllocnistis": {
+                "precision": 0.9743589743589743,
+                "recall": 0.8260869565217391,
+                "f1_score": 0.8941176470588236,
+                "support": 46
+            },
+            "pest_thrips": {
+                "precision": 0.8620689655172413,
+                "recall": 0.9259259259259259,
+                "f1_score": 0.8928571428571429,
+                "support": 54
+            }
+        }
+    }
+}

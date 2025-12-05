@@ -1,0 +1,25 @@
+﻿Model Name,Training Strategy,Parameters (M),Accuracy,F1 (Macro),Precision (Weighted),CPU FPS,GPU FPS
+convnextv2_atto,Fine-tuning,3.39,0.9831,0.9805,0.9830,92.56,354.42
+convnextv2_atto,From Scratch,3.39,0.5475,0.4463,0.5375,92.56,354.42
+convnextv2_atto,Pretrained Only,3.39,0.1390,0.0796,0.1963,92.56,354.42
+dla46x_c,Fine-tuning,0.82,0.9085,0.8362,0.9125,58.80,425.13
+dla46x_c,From Scratch,0.82,0.5186,0.3808,0.4971,58.80,425.13
+dla46x_c,Pretrained Only,0.82,0.1339,0.0297,0.0183,58.80,425.13
+edgenext_xx_small,Fine-tuning,1.16,0.9237,0.7951,0.9181,100.22,280.41
+edgenext_xx_small,From Scratch,1.16,0.4153,0.2659,0.3539,100.22,280.41
+edgenext_xx_small,Pretrained Only,1.16,0.1797,0.1080,0.1668,100.22,280.41
+mnasnet_small,Fine-tuning,0.78,0.8915,0.8104,0.8893,65.77,338.96
+mnasnet_small,From Scratch,0.78,0.4136,0.2922,0.3869,65.77,338.96
+mnasnet_small,Pretrained Only,0.78,0.2271,0.1268,0.1304,65.77,338.96
+mobilenetv3_small_050,Fine-tuning,0.58,0.7373,0.5980,0.7403,116.54,431.04
+mobilenetv3_small_050,From Scratch,0.58,0.4559,0.3150,0.4343,116.54,431.04
+mobilenetv3_small_050,Pretrained Only,0.58,0.1254,0.0818,0.2336,116.54,431.04
+mobilevit_xxs,Fine-tuning,0.96,0.9424,0.8130,0.9390,58.82,233.90
+mobilevit_xxs,From Scratch,0.96,0.5610,0.3704,0.4865,58.82,233.90
+mobilevit_xxs,Pretrained Only,0.96,0.1136,0.0462,0.0325,58.82,233.90
+mobilevitv2_050,Fine-tuning,1.12,0.8932,0.7543,0.8878,55.39,252.83
+mobilevitv2_050,From Scratch,1.12,0.5203,0.3378,0.5062,55.39,252.83
+mobilevitv2_050,Pretrained Only,1.12,0.1271,0.0388,0.1624,55.39,252.83
+starnet_s1,Fine-tuning,2.68,0.9458,0.9246,0.9491,50.93,335.57
+starnet_s1,From Scratch,2.68,0.6949,0.5733,0.6840,50.93,335.57
+starnet_s1,Pretrained Only,2.68,0.0915,0.0475,0.0774,50.93,335.57

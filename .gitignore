@@ -7,8 +7,10 @@ __pycache__/
 # Ignore weights file
 *.pth
 *.pt
+*.onnx
+*.onnx.data
 
 # Ignore image file
-*.jpg
-*.jpeg
-*.png
+# *.jpg
+# *.jpeg
+# *.png

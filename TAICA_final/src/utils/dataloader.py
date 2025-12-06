@@ -63,8 +63,7 @@ class CitrusDataset(Dataset):
 
 def get_transforms(image_size=224):
     """
-    標準增強：與 Teacher 訓練時相同
-    使用您資料集的標準化參數
+    標準增強，使用您資料集的標準化參數
     """
     mean = [0.34928706, 0.4075573, 0.27877277]
     std = [0.20200579, 0.19030167, 0.19916368]

@@ -1,9 +1,8 @@
 """
 Author: Chi-An Chen
 Date: 2025-12-05
-Version: 2.0
-Description: 使用 pytorch-grad-cam 函式庫比較 ConvNeXt V2 Large 和 MobileViT XXS 的 GradCAM
-             隨機選取 10 張測試圖片，生成並保存兩個模型的 GradCAM 熱圖對比
+Version: 2.1
+Description: Modified to select 2 samples per class and only save when at least one model predicts correctly
              
 Dependencies: pip install grad-cam
 """
@@ -19,27 +18,27 @@ from torchvision import transforms
 from pytorch_grad_cam import GradCAM
 from pytorch_grad_cam.utils.image import show_cam_on_image
 from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
+from collections import defaultdict
 
 from utils.dataloader import CitrusDataset, get_transforms
 
 
 def get_target_layers(model, model_name):
     """
-    獲取目標層用於 GradCAM
+    Get target layers for GradCAM
     
     Args:
-        model: 模型
-        model_name: 模型名稱
+        model: Model
+        model_name: Model name
     
     Returns:
-        target_layers: 目標層列表
+        target_layers: List of target layers
     """
     if 'convnext' in model_name.lower():
-        # ConvNeXt: 使用最後一個 stage 的最後一個 block
+        # ConvNeXt: Use the last block of the last stage
         target_layers = [model.stages[-1].blocks[-1].norm]
     elif 'mobilevit' in model_name.lower():
-        # MobileViT: 使用最後一個 stage 的最後一層
-        # MobileViT 結構較複雜，選擇最後的 conv layer
+        # MobileViT: Use the last layer of the last stage
         target_layers = [model.stages[-1][-1]]
     else:
         raise ValueError(f"Unknown model architecture: {model_name}")
@@ -48,17 +47,17 @@ def get_target_layers(model, model_name):
 
 
 def load_model(checkpoint_path, model_name, num_classes, device):
-    """載入訓練好的模型"""
-    # 創建模型
+    """Load trained model"""
+    # Create model
     model = timm.create_model(model_name, pretrained=False, num_classes=num_classes)
     
-    # 載入權重
+    # Load weights
     checkpoint = torch.load(checkpoint_path, map_location=device)
     model.load_state_dict(checkpoint['model_state_dict'])
     model = model.to(device)
     model.eval()
     
-    print(f"✓ 成功載入模型: {model_name}")
+    print(f"Successfully loaded model: {model_name}")
     print(f"  Checkpoint: {checkpoint_path}")
     if 'val_acc' in checkpoint:
         print(f"  Val Acc: {checkpoint['val_acc']:.4f}")
@@ -70,38 +69,38 @@ def load_model(checkpoint_path, model_name, num_classes, device):
 
 def generate_gradcam(model, target_layers, input_tensor, target_class=None):
     """
-    使用 pytorch-grad-cam 生成 GradCAM
+    Generate GradCAM using pytorch-grad-cam
     
     Args:
-        model: 模型
-        target_layers: 目標層列表
-        input_tensor: 輸入圖片 tensor (1, C, H, W)
-        target_class: 目標類別，None 則使用預測類別
+        model: Model
+        target_layers: List of target layers
+        input_tensor: Input image tensor (1, C, H, W)
+        target_class: Target class, None uses predicted class
     
     Returns:
-        cam: GradCAM 熱圖 (H, W)
-        pred_class: 預測類別
-        pred_prob: 預測概率
+        cam: GradCAM heatmap (H, W)
+        pred_class: Predicted class
+        pred_prob: Prediction probability
     """
-    # 創建 GradCAM 對象
+    # Create GradCAM object
     cam_algorithm = GradCAM(model=model, target_layers=target_layers)
     
-    # 獲取預測
+    # Get prediction
     with torch.no_grad():
         output = model(input_tensor)
         probs = torch.nn.functional.softmax(output, dim=1)
         pred_class = output.argmax(dim=1).item()
         pred_prob = probs[0, pred_class].item()
     
-    # 如果沒有指定目標類別，使用預測類別
+    # If no target class specified, use predicted class
     if target_class is None:
         target_class = pred_class
     
-    # 生成 GradCAM
+    # Generate GradCAM
     targets = [ClassifierOutputTarget(target_class)]
     grayscale_cam = cam_algorithm(input_tensor=input_tensor, targets=targets)
     
-    # 取第一張圖片的 CAM
+    # Get CAM for first image
     cam = grayscale_cam[0, :]
     
     return cam, pred_class, pred_prob
@@ -112,51 +111,51 @@ def visualize_gradcam_comparison(original_img, input_tensor, cam1, cam2,
                                   pred1, pred2, prob1, prob2, 
                                   true_label, class_name, save_path):
     """
-    視覺化兩個模型的 GradCAM 對比
+    Visualize GradCAM comparison of two models
     
     Args:
-        original_img: 原始圖片 PIL Image
-        input_tensor: 輸入 tensor (用於反標準化)
-        cam1, cam2: 兩個模型的 GradCAM 熱圖
-        model1_name, model2_name: 模型名稱
-        pred1, pred2: 預測類別
-        prob1, prob2: 預測概率
-        true_label: 真實標籤
-        class_name: 真實類別名稱
-        save_path: 保存路徑
+        original_img: Original PIL Image
+        input_tensor: Input tensor (for denormalization)
+        cam1, cam2: GradCAM heatmaps of two models
+        model1_name, model2_name: Model names
+        pred1, pred2: Predicted classes
+        prob1, prob2: Prediction probabilities
+        true_label: True label
+        class_name: True class name
+        save_path: Save path
     """
-    # 將 PIL Image 轉換為 numpy array (0-1 範圍)
+    # Convert PIL Image to numpy array (0-1 range)
     img_array = np.array(original_img.resize((224, 224))) / 255.0
     
-    # 使用 show_cam_on_image 生成疊加圖
+    # Generate overlay images using show_cam_on_image
     cam1_image = show_cam_on_image(img_array, cam1, use_rgb=True)
     cam2_image = show_cam_on_image(img_array, cam2, use_rgb=True)
     
-    # 創建對比圖
+    # Create comparison figure
     fig, axes = plt.subplots(1, 3, figsize=(18, 6))
     
-    # 原始圖片
+    # Original image
     axes[0].imshow(original_img)
     axes[0].set_title(f'Original Image\nTrue Label: {class_name} (Class {true_label})', 
                       fontsize=12, fontweight='bold')
     axes[0].axis('off')
     
-    # 模型 1 的 GradCAM
+    # Model 1 GradCAM
     axes[1].imshow(cam1_image)
-    correct1 = '✓' if pred1 == true_label else '✗'
+    correct1 = 'Correct' if pred1 == true_label else 'Wrong'
     color1 = 'green' if pred1 == true_label else 'red'
     axes[1].set_title(
-        f'{model1_name}\nPred: Class {pred1} (prob: {prob1:.3f}) {correct1}',
+        f'{model1_name}\nPred: Class {pred1} (prob: {prob1:.3f}) - {correct1}',
         fontsize=12, fontweight='bold', color=color1
     )
     axes[1].axis('off')
     
-    # 模型 2 的 GradCAM
+    # Model 2 GradCAM
     axes[2].imshow(cam2_image)
-    correct2 = '✓' if pred2 == true_label else '✗'
+    correct2 = 'Correct' if pred2 == true_label else 'Wrong'
     color2 = 'green' if pred2 == true_label else 'red'
     axes[2].set_title(
-        f'{model2_name}\nPred: Class {pred2} (prob: {prob2:.3f}) {correct2}',
+        f'{model2_name}\nPred: Class {pred2} (prob: {prob2:.3f}) - {correct2}',
         fontsize=12, fontweight='bold', color=color2
     )
     axes[2].axis('off')
@@ -166,9 +165,29 @@ def visualize_gradcam_comparison(original_img, input_tensor, cam1, cam2,
     plt.close()
 
 
+def organize_samples_by_class(test_dataset, image_paths):
+    """
+    Organize test samples by class
+    
+    Args:
+        test_dataset: Test dataset
+        image_paths: List of image paths
+    
+    Returns:
+        class_samples: Dictionary mapping class_id to list of sample indices
+    """
+    class_samples = defaultdict(list)
+    
+    for idx in range(len(test_dataset)):
+        _, label = test_dataset[idx]
+        class_samples[label].append(idx)
+    
+    return class_samples
+
+
 def main():
-    """主函數"""
-    # 配置
+    """Main function"""
+    # Configuration
     CONFIG = {
         'model1': {
             'name': 'convnextv2_atto',
@@ -183,29 +202,29 @@ def main():
         'test_txt': './TAICA期末資料集/test.txt',
         'root_dir': './TAICA期末資料集',
         'image_size': 224,
-        'num_samples': 10,
-        'output_dir': './gradcam_comparison',
+        'samples_per_class': 2,  # 2 samples per class
+        'output_dir': './gradcam_comparison_per_class',
         'seed': 666
     }
     
-    # 設置隨機種子
+    # Set random seed
     random.seed(CONFIG['seed'])
     torch.manual_seed(CONFIG['seed'])
     if torch.cuda.is_available():
         torch.cuda.manual_seed(CONFIG['seed'])
     
-    # 設備
+    # Device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"使用設備: {device}")
+    print(f"Using device: {device}")
     if torch.cuda.is_available():
         print(f"GPU: {torch.cuda.get_device_name(0)}")
     print()
     
-    # 創建輸出目錄
+    # Create output directory
     os.makedirs(CONFIG['output_dir'], exist_ok=True)
     
-    # 準備數據
-    print("準備測試數據集...")
+    # Prepare data
+    print("Preparing test dataset...")
     _, val_transform = get_transforms(CONFIG['image_size'])
     test_dataset = CitrusDataset(
         CONFIG['test_txt'],
@@ -213,13 +232,13 @@ def main():
         transform=val_transform
     )
     
-    print(f"測試樣本數: {len(test_dataset)}")
-    print(f"類別數量: {len(test_dataset.classes)}")
-    print(f"類別列表: {test_dataset.classes}\n")
+    print(f"Test samples: {len(test_dataset)}")
+    print(f"Number of classes: {len(test_dataset.classes)}")
+    print(f"Class list: {test_dataset.classes}\n")
     
-    # 載入兩個模型
+    # Load two models
     print("="*80)
-    print("載入模型")
+    print("Loading Models")
     print("="*80)
     
     model1, class_names = load_model(
@@ -238,56 +257,88 @@ def main():
         device
     )
     
-    # 獲取目標層
+    # Get target layers
     print("\n" + "="*80)
-    print("設置 GradCAM 目標層")
+    print("Setting GradCAM Target Layers")
     print("="*80)
     
     target_layers1 = get_target_layers(model1, CONFIG['model1']['name'])
     target_layers2 = get_target_layers(model2, CONFIG['model2']['name'])
     
-    print(f"✓ Model 1 目標層: {target_layers1[0]}")
-    print(f"✓ Model 2 目標層: {target_layers2[0]}")
+    print(f"Model 1 target layer: {target_layers1[0]}")
+    print(f"Model 2 target layer: {target_layers2[0]}")
     
-    # 隨機選擇樣本
-    print(f"\n隨機選擇 {CONFIG['num_samples']} 個測試樣本...")
-    random_indices = random.sample(range(len(test_dataset)), CONFIG['num_samples'])
-    print(f"選中的索引: {random_indices}")
-    
-    # 讀取測試集圖片路徑
+    # Read test image paths
     with open(CONFIG['test_txt'], 'r', encoding='utf-8') as f:
         image_paths = [line.strip().split()[0] for line in f.readlines()]
     
-    # 處理每個樣本
+    # Organize samples by class
+    print(f"\nOrganizing samples by class...")
+    class_samples = organize_samples_by_class(test_dataset, image_paths)
+    
+    print(f"Samples per class:")
+    for class_id, indices in sorted(class_samples.items()):
+        print(f"  Class {class_id} ({test_dataset.classes[class_id]}): {len(indices)} samples")
+    
+    # Select samples - 2 per class
+    print(f"\nSelecting {CONFIG['samples_per_class']} samples per class...")
+    selected_samples = []
+    
+    for class_id in sorted(class_samples.keys()):
+        class_name = test_dataset.classes[class_id]
+        available = class_samples[class_id]
+        
+        # Randomly select 2 samples (or all if less than 2)
+        num_to_select = min(CONFIG['samples_per_class'], len(available))
+        selected = random.sample(available, num_to_select)
+        
+        for sample_idx in selected:
+            selected_samples.append((sample_idx, class_id, class_name))
+        
+        print(f"  Class {class_id} ({class_name}): selected {num_to_select} samples")
+    
+    print(f"\nTotal selected samples: {len(selected_samples)}")
+    
+    # Process each sample
     print("\n" + "="*80)
-    print("生成 GradCAM 對比圖")
+    print("Generating GradCAM Comparison Images")
     print("="*80 + "\n")
     
     results = []
+    saved_count = 0
+    skipped_count = 0
     
-    for idx, sample_idx in enumerate(random_indices, 1):
-        print(f"處理樣本 {idx}/{CONFIG['num_samples']} (Dataset Index: {sample_idx})...")
+    for idx, (sample_idx, true_label, class_name) in enumerate(selected_samples, 1):
+        print(f"Processing sample {idx}/{len(selected_samples)} (Dataset Index: {sample_idx}, Class: {class_name})...")
         
-        # 獲取樣本
+        # Get sample
         img_tensor, label = test_dataset[sample_idx]
         img_path = os.path.join(CONFIG['root_dir'], image_paths[sample_idx])
-        class_name = test_dataset.classes[label]
         
-        # 載入原始圖片用於顯示
+        # Load original image for display
         original_img = Image.open(img_path).convert('RGB')
         
-        # 準備模型輸入
+        # Prepare model input
         input_tensor = img_tensor.unsqueeze(0).to(device)
         
-        # 生成 GradCAM
+        # Generate GradCAM
         try:
             cam1, pred1, prob1 = generate_gradcam(model1, target_layers1, input_tensor)
             cam2, pred2, prob2 = generate_gradcam(model2, target_layers2, input_tensor)
             
-            # 視覺化並保存
+            # Check if at least one model predicts correctly
+            at_least_one_correct = (pred1 == label) or (pred2 == label)
+            
+            if not at_least_one_correct:
+                print(f"  Both models wrong - SKIPPING")
+                print(f"  True: Class {label}, Model1: Class {pred1}, Model2: Class {pred2}\n")
+                skipped_count += 1
+                continue
+            
+            # Visualize and save
             save_path = os.path.join(
                 CONFIG['output_dir'],
-                f'gradcam_comparison_{idx:02d}_class{label}_{class_name}.png'
+                f'gradcam_class{label:02d}_{class_name}_sample{idx:02d}.png'
             )
             
             visualize_gradcam_comparison(
@@ -298,7 +349,7 @@ def main():
                 label, class_name, save_path
             )
             
-            # 記錄結果
+            # Record result
             result = {
                 'sample_id': idx,
                 'dataset_index': sample_idx,
@@ -319,42 +370,51 @@ def main():
                 }
             }
             results.append(result)
+            saved_count += 1
             
-            print(f"  真實標籤: {class_name} (Class {label})")
-            print(f"  {CONFIG['model1']['display_name']}: Class {pred1} (prob: {prob1:.3f}) {'✓' if pred1 == label else '✗'}")
-            print(f"  {CONFIG['model2']['display_name']}: Class {pred2} (prob: {prob2:.3f}) {'✓' if pred2 == label else '✗'}")
-            print(f"  ✓ 保存至: {save_path}\n")
+            print(f"  True Label: {class_name} (Class {label})")
+            print(f"  {CONFIG['model1']['display_name']}: Class {pred1} (prob: {prob1:.3f}) {'CORRECT' if pred1 == label else 'WRONG'}")
+            print(f"  {CONFIG['model2']['display_name']}: Class {pred2} (prob: {prob2:.3f}) {'CORRECT' if pred2 == label else 'WRONG'}")
+            print(f"  Saved to: {save_path}\n")
             
         except Exception as e:
-            print(f"  ✗ 處理失敗: {str(e)}\n")
+            print(f"  Processing failed: {str(e)}\n")
             continue
     
-    # 統計結果
+    # Statistics
     print("="*80)
-    print("統計結果")
+    print("Statistics")
     print("="*80 + "\n")
+    
+    print(f"Total processed: {len(selected_samples)}")
+    print(f"Saved: {saved_count}")
+    print(f"Skipped (both wrong): {skipped_count}\n")
     
     if results:
         model1_correct = sum(1 for r in results if r['model1']['correct'])
         model2_correct = sum(1 for r in results if r['model2']['correct'])
         both_correct = sum(1 for r in results if r['model1']['correct'] and r['model2']['correct'])
-        both_wrong = sum(1 for r in results if not r['model1']['correct'] and not r['model2']['correct'])
+        only_model1_correct = sum(1 for r in results if r['model1']['correct'] and not r['model2']['correct'])
+        only_model2_correct = sum(1 for r in results if not r['model1']['correct'] and r['model2']['correct'])
         
         print(f"{CONFIG['model1']['display_name']}:")
-        print(f"  正確: {model1_correct}/{len(results)} ({model1_correct/len(results)*100:.1f}%)")
+        print(f"  Correct: {model1_correct}/{len(results)} ({model1_correct/len(results)*100:.1f}%)")
         print()
         print(f"{CONFIG['model2']['display_name']}:")
-        print(f"  正確: {model2_correct}/{len(results)} ({model2_correct/len(results)*100:.1f}%)")
+        print(f"  Correct: {model2_correct}/{len(results)} ({model2_correct/len(results)*100:.1f}%)")
         print()
-        print(f"兩者都正確: {both_correct}/{len(results)} ({both_correct/len(results)*100:.1f}%)")
-        print(f"兩者都錯誤: {both_wrong}/{len(results)} ({both_wrong/len(results)*100:.1f}%)")
+        print(f"Both correct: {both_correct}/{len(results)} ({both_correct/len(results)*100:.1f}%)")
+        print(f"Only Model 1 correct: {only_model1_correct}/{len(results)} ({only_model1_correct/len(results)*100:.1f}%)")
+        print(f"Only Model 2 correct: {only_model2_correct}/{len(results)} ({only_model2_correct/len(results)*100:.1f}%)")
         
-        # 保存詳細結果
+        # Save detailed results
         results_file = os.path.join(CONFIG['output_dir'], 'gradcam_comparison_results.json')
         summary = {
             'config': CONFIG,
             'statistics': {
-                'total_samples': len(results),
+                'total_processed': len(selected_samples),
+                'total_saved': saved_count,
+                'skipped': skipped_count,
                 'model1': {
                     'name': CONFIG['model1']['display_name'],
                     'correct': model1_correct,
@@ -366,7 +426,8 @@ def main():
                     'accuracy': f"{model2_correct/len(results)*100:.2f}%"
                 },
                 'both_correct': both_correct,
-                'both_wrong': both_wrong
+                'only_model1_correct': only_model1_correct,
+                'only_model2_correct': only_model2_correct
             },
             'samples': results
         }
@@ -374,12 +435,12 @@ def main():
         with open(results_file, 'w', encoding='utf-8') as f:
             json.dump(summary, f, indent=4, ensure_ascii=False)
         
-        print(f"\n✓ 詳細結果已保存至: {results_file}")
-        print(f"✓ GradCAM 對比圖已保存至: {CONFIG['output_dir']}/")
+        print(f"\nDetailed results saved to: {results_file}")
+        print(f"GradCAM comparison images saved to: {CONFIG['output_dir']}/")
     else:
-        print("✗ 沒有成功處理的樣本")
+        print("No successfully processed samples")
     
-    print(f"\n所有處理完成!")
+    print(f"\nAll processing completed!")
 
 
 if __name__ == "__main__":

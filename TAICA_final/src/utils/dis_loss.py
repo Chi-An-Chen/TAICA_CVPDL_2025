@@ -4,7 +4,6 @@ Date: 2025-12-02
 Version: 2.1
 Description:
 """
-import torch
 import torch.nn as nn
 
 # ==================== 蒸餾損失函數 ====================

@@ -2,7 +2,7 @@
 Author: Chi-An Chen
 Date: 2025-11-27
 Version: 2.1
-Description: 使用 batch + CUDA 計算圖片 mean / std (含 resize, 適用於不同大小圖片)
+Description: 
 """
 
 import torch

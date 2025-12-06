@@ -26,7 +26,7 @@ CONFIG = {
     'root_dir': "./TAICA期末資料集",
     'train_txt': "./TAICA期末資料集/train.txt",
     'val_txt': "./TAICA期末資料集/valid.txt",
-    'test_txt': "./TAICA期末資料集/test.txt",
+    'test_txt': "../TAICA期末資料集/test.txt",
     
     # 模型配置
     'model_name': 'convnextv2_atto', # ConvNeXt V2 Atto 模型

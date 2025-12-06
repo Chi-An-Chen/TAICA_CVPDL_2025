@@ -17,13 +17,15 @@
 conda create -n final_project python=3.12 -y
 conda activate final_project
 
-cd src
-
 pip install -q uv
 uv pip install -r requirements.txt
 
 # Install pytorch based on your CUDA version ex.12.4
 uv pip install torch==2.6.0 torchvision==0.21.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cu124
+```
+
+```bash
+cd src
 ```
 
 ## 1. Evaluate baseline model
@@ -55,4 +57,45 @@ python 001_finetune_teacher.py
 - 根據 finetune teacher model 的結果，選擇效能最佳的模型進行量化 (quantization)。
 ```bash
 python 002_quantization.py
+```
+
+## 4. Compare training methods
+```bash
+cd 003_compare_model
+python 003_compare_*.py
+```
+
+## 5. Smmarize results
+```bash
+cd ..
+python 004_compaire_all.py
+```
+
+## 6. Transfer model from .pth to .onnx and test the model
+```bash
+python 005_to_onnx.py
+```
+```bash
+python 006_test_onnx.py
+```
+
+## 6. Compare two model using GradCAM
+```bash
+python 007_gradcam.py
+```
+
+## Others
+> Claclulate std, mean for custom dataset
+```bash
+cd utils
+python cal_std_mean.py.py
+```
+> See the distribution of dataset
+```bash
+python see_dataset.py.py
+```
+> See top 100 smallest models in timm
+```bash
+cd ..
+python see_model.py.py
 ```

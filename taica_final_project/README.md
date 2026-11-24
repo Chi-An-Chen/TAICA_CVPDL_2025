@@ -11,6 +11,8 @@
 "pest_phyllocnistis"
 "pest_thrips"
 ```
+The [project report](<TAICA_Final Project Report.pdf>) records the experiment. Begin in `taica_final_project/` for installation, then use `src/` for the numbered scripts. Provide the citrus dataset and split files at the paths configured in the scripts.
+
 ## Installation
 
 ```bash
@@ -18,7 +20,7 @@ conda create -n final_project python=3.12 -y
 conda activate final_project
 
 pip install -q uv
-uv pip install -r requirements.txt
+uv pip install -r requirement.txt
 
 # Install pytorch based on your CUDA version ex.12.4
 uv pip install torch==2.6.0 torchvision==0.21.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cu124
@@ -53,16 +55,19 @@ python 000_base_model.py
 python 001_finetune_teacher.py
 ```
 
-## 3. Quantization
-- 根據 finetune teacher model 的結果，選擇效能最佳的模型進行量化 (quantization)。
+## 3. Knowledge distillation
+
+[002_distillation.py](src/002_distillation.py) loads the ConvNeXt V2 Large teacher from `checkpoints_finetune/best_teacher_model_convnextv2_large.pth` and writes student outputs under `checkpoints_kd/`.
+
 ```bash
-python 002_quantization.py
+python 002_distillation.py
 ```
 
 ## 4. Compare training methods
 ```bash
 cd 003_compare_model
-python 003_compare_*.py
+# Select one script for the target backbone, for example:
+python 003_compare_mobilevit.py
 ```
 
 ## 5. Smmarize results
@@ -79,23 +84,17 @@ python 005_to_onnx.py
 python 006_test_onnx.py
 ```
 
-## 6. Compare two model using GradCAM
+## 7. Compare two model using GradCAM
 ```bash
 python 007_gradcam.py
 ```
 
-## Others
-> Claclulate std, mean for custom dataset
+## Other utilities
+
+From `src/`, inspect the dataset statistics or the list of small models using the corresponding script:
+
 ```bash
-cd utils
-python cal_std_mean.py.py
-```
-> See the distribution of dataset
-```bash
-python see_dataset.py.py
-```
-> See top 100 smallest models in timm
-```bash
-cd ..
-python see_model.py.py
+python utils/cal_std_mean.py
+python see_dataset.py
+python ../see_model.py
 ```

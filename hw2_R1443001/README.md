@@ -2,11 +2,12 @@
 
 ## Installation
 
+Start in `hw2_R1443001/`. Resolve the `src/` paths in the data preparation and training examples from this homework directory.
+
 ```bash
 conda create -n HW_2 python=3.12 -y
 conda activate HW_2
 
-cd src
 
 pip install -q uv
 uv pip install -r requirements.txt

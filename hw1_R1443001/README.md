@@ -2,11 +2,12 @@
 
 ## Installation
 
+Start in `hw1_R1443001/`. Resolve the `src/` paths in the data preparation and training examples from this homework directory.
+
 ```bash
 conda create -n HW_1 python=3.12 -y
 conda activate HW_1
 
-cd src
 
 pip install -q uv
 uv pip install -r requirements.txt
@@ -64,7 +65,7 @@ Set the dataset configurations in the `data.yaml` file within each model’s fol
 ### For Hyper-YOLO
 #### Training
 ```bash
-python train_dual.py --device 0 --batch 8 --flat-cos-lr --data data_aug.yaml --img 640 --cfg models/detect/yolov9-c-hyper.yaml --name yolov9-c-hyper --hyp hyp.scratch-self.yaml --epochs 50 --save-period 5
+python train_dual.py --device 0 --batch 8 --flat-cos-lr --data data_aug.yaml --img 640 --cfg models/detect/yolov9-c-hyper.yaml --name yolov9-c-hyper --hyp data/hyps/hyp.scratch-self.yaml --epochs 50 --save-period 5
 ```
 
 #### Testing & Evaluation
@@ -72,13 +73,11 @@ python train_dual.py --device 0 --batch 8 --flat-cos-lr --data data_aug.yaml --i
 python val_dual.py --data data_aug.yaml --img 640 --batch 32 --device 0 --weights runs/train/yolov9-c-hyper/weights/best.pt --save-json --name yolov9_s_hyper_c_640_val --conf-sweep
 ```
 
-#### Inference
-> Generate prediction.csv for Kaggle competition
-```bash
-python val_dual.py --data data_aug.yaml --img 640 --batch 32 --device 0 --weights runs/train/yolov9-c-hyper/weights/best.pt --save-json --name yolov9_s_hyper_c_640_val --conf-sweep
-```
+#### Prediction output
 
-### For YOLOv12 & RT-DETR
+`--save-json` in the validation command writes COCO-style prediction JSON. The separate [YOLOv12 prediction script](src/model/yolo_12m/003_predict_yolo.py) is the CSV submission entry for that model.
+
+### For the bundled YOLOv12 scripts
 #### Training
 ```bash
 python 001_train.py
@@ -86,7 +85,7 @@ python 001_train.py
 
 #### Testing & Evaluation
 ```bash
-python 002_eval.py.py
+python 002_eval.py
 ```
 
 #### Inference
